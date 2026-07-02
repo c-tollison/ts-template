@@ -2,6 +2,7 @@ import { serve } from '@hono/node-server';
 import {
     createErrorHandler,
     createRequestLoggerMiddleware,
+    registerGracefulShutdown,
 } from '@ts-template/server';
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
@@ -10,7 +11,7 @@ import { requestId } from 'hono/request-id';
 import { secureHeaders } from 'hono/secure-headers';
 
 import { type Config, loadConfig } from './lib/config';
-import { init, logger } from './lib/container';
+import { db, init, logger } from './lib/container';
 import { getCorsConfig } from './lib/cors';
 import users from './routes/users';
 
@@ -31,7 +32,6 @@ export function createApp(config: Config) {
     const api = app.basePath('/api');
     api.get('/health', (c) => c.json({ status: 'ok' }));
 
-    // Chain routes here to show types safe routes on frontend client
     return api.route('/users', users);
 }
 
@@ -46,7 +46,7 @@ function main() {
 
     const app = createApp(config);
 
-    serve(
+    const server = serve(
         {
             fetch: app.fetch,
             port: config.server.port,
@@ -55,6 +55,8 @@ function main() {
             logger().info({ port: info.port }, 'Server is running');
         }
     );
+
+    registerGracefulShutdown(server, logger(), () => db().$client.end());
 }
 
 main();

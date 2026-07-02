@@ -5,3 +5,4 @@ export {
 } from './middleware/error-handler';
 export { createRequestLoggerMiddleware } from './middleware/logging';
 export { schemaValidator } from './middleware/schema-validator';
+export { registerGracefulShutdown } from './shutdown';
