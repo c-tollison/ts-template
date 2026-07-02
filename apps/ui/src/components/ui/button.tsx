@@ -1,8 +1,10 @@
 import type { ButtonHTMLAttributes } from 'react';
 import { Link, type LinkProps } from 'react-router';
 
+import { cn } from '@/lib/utils';
+
 const baseStyles =
-    'inline-flex items-center justify-center rounded-md border border-gray-300 px-4 py-2 text-sm font-medium transition-colors hover:bg-gray-50 disabled:pointer-events-none disabled:opacity-50';
+    'inline-flex items-center justify-center rounded-md border border-gray-300 px-4 py-2 text-sm font-medium transition-colors hover:bg-gray-50 disabled:pointer-events-none disabled:opacity-50 dark:border-gray-700 dark:hover:bg-gray-800';
 
 type ButtonAsButton = ButtonHTMLAttributes<HTMLButtonElement> & {
     to?: undefined;
@@ -15,7 +17,7 @@ type ButtonAsLink = Omit<LinkProps, 'className'> & {
 export type ButtonProps = ButtonAsButton | ButtonAsLink;
 
 export function Button(props: ButtonProps) {
-    const className = [baseStyles, props.className].filter(Boolean).join(' ');
+    const className = cn(baseStyles, props.className);
 
     if (props.to !== undefined) {
         const { to, ...rest } = props;

@@ -12,10 +12,12 @@
         "@tanstack/react-query": "^5.101.2",
         "@ts-template/api": "workspace:*",
         "@ts-template/types": "workspace:*",
+        "clsx": "^2.1.1",
         "hono": "catalog:",
         "react": "^19.2.7",
         "react-dom": "^19.2.7",
         "react-router": "^8.1.0",
+        "tailwind-merge": "^3.6.0",
         "tailwindcss": "^4.3.2",
         "zod": "catalog:"
     },

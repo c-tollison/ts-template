@@ -1,7 +1,7 @@
 import type { ApiRoutes } from '@ts-template/api';
 import { hc } from 'hono/client';
 
-const API_BASE = import.meta.env.VITE_API_URL as string;
+const API_BASE = import.meta.env.VITE_API_URL;
 
 const customFetch = async (
     input: RequestInfo | URL,
