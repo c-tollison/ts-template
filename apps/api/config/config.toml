@@ -1,11 +1,21 @@
-[local]
+[local.server]
 port = 3001
-corsOrigins = ['http://localhost:5173']
 
-[dev]
-port = 3001
-corsOrigins = []
+[local.cors]
+origins = ['http://localhost:5173']
 
-[prod]
+# TODO(template): fill in real origins before deploying dev/prod.
+# Only the active stage is validated, so these placeholders don't
+# block local development.
+
+[dev.server]
 port = 3001
-corsOrigins = []
+
+[dev.cors]
+origins = []
+
+[prod.server]
+port = 3001
+
+[prod.cors]
+origins = []

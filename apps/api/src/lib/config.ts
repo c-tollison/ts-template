@@ -5,51 +5,61 @@ import { z } from 'zod';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
-const StageSchema = z.enum(Stage);
-
 const StageConfigSchema = z.object({
-    port: z.number(),
-    corsOrigins: z.array(z.string()),
+    server: z.object({
+        port: z.number().int(),
+    }),
+    cors: z.object({
+        origins: z.array(z.string()).min(1, 'cors.origins must not be empty'),
+    }),
 });
 
-const ConfigFileSchema = z.record(z.string(), StageConfigSchema);
+const EnvSchema = z.object({
+    STAGE: z.enum(Stage),
+    DB_HOST: z.string().min(1),
+    DB_PORT: z.coerce.number().int(),
+    DB_USER: z.string().min(1),
+    DB_PASSWORD: z.string().min(1),
+    DB_NAME: z.string().min(1),
+    DB_MAX_CONNECTIONS: z.coerce.number().int(),
+});
 
-export interface DbConfig {
-    host: string;
-    port: number;
-    user: string;
-    password: string;
-    name: string;
-    maxConnections: number;
-}
-
-export interface Config {
+export type Config = z.infer<typeof StageConfigSchema> & {
     stage: Stage;
-    port: number;
-    corsOrigins: string[];
-    db: DbConfig;
-}
+    db: {
+        host: string;
+        port: number;
+        user: string;
+        password: string;
+        name: string;
+        maxConnections: number;
+    };
+};
 
-export { StageSchema };
+export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
+    const parsedEnv = EnvSchema.parse(env);
+    const stage = parsedEnv.STAGE;
 
-export function loadConfig(stage: Stage, db: DbConfig): Config {
     const path = resolve(process.cwd(), 'config', 'config.toml');
-    const content = readFileSync(path, 'utf-8');
-    const configFile = ConfigFileSchema.parse(parse(content));
+    const configFile: Record<string, unknown> = parse(
+        readFileSync(path, 'utf-8')
+    );
 
-    const stageConfig = configFile[stage];
-    if (!stageConfig) {
-        throw new Error(`No config found for stage: ${stage}`);
-    }
-
-    if (stageConfig.corsOrigins.length === 0) {
-        throw new Error(`corsOrigins must not be empty for stage: ${stage}`);
+    const stageTable = configFile[stage];
+    if (!stageTable) {
+        throw new Error(`No config found for stage '${stage}' in ${path}`);
     }
 
     return {
         stage,
-        port: stageConfig.port,
-        corsOrigins: stageConfig.corsOrigins,
-        db,
+        ...StageConfigSchema.parse(stageTable),
+        db: {
+            host: parsedEnv.DB_HOST,
+            port: parsedEnv.DB_PORT,
+            user: parsedEnv.DB_USER,
+            password: parsedEnv.DB_PASSWORD,
+            name: parsedEnv.DB_NAME,
+            maxConnections: parsedEnv.DB_MAX_CONNECTIONS,
+        },
     };
 }

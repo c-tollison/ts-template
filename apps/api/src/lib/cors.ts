@@ -4,9 +4,9 @@ import type { Config } from './config';
 
 type CorsOptions = NonNullable<Parameters<typeof cors>[0]>;
 
-export function getCorsConfig(config: Config): CorsOptions {
+export function getCorsConfig(config: Config['cors']): CorsOptions {
     return {
-        origin: config.corsOrigins,
+        origin: config.origins,
         allowHeaders: ['Content-Type', 'Authorization', 'x-workspace-id'],
         allowMethods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
         maxAge: 86400,
