@@ -12,7 +12,6 @@ import { secureHeaders } from 'hono/secure-headers';
 import { type Config, loadConfig } from './lib/config';
 import { init, logger } from './lib/container';
 import { getCorsConfig } from './lib/cors';
-import helloWorld from './routes/hello-world';
 import users from './routes/users';
 
 export function createApp(config: Config) {
@@ -33,7 +32,7 @@ export function createApp(config: Config) {
     api.get('/health', (c) => c.json({ status: 'ok' }));
 
     // Chain routes here to show types safe routes on frontend client
-    return api.route('/test', helloWorld).route('/users', users);
+    return api.route('/users', users);
 }
 
 export type ApiRoutes = ReturnType<typeof createApp>;

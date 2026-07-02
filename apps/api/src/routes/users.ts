@@ -1,9 +1,9 @@
 import { schema } from '@ts-template/db';
+import { schemaValidator } from '@ts-template/server';
 import { CreateUserRequestSchema } from '@ts-template/types';
 import { Hono } from 'hono';
 
 import { db } from '../lib/container';
-import { schemaValidator } from '../middleware/schema-validator';
 
 const users = new Hono().post(
     '/',

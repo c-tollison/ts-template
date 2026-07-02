@@ -4,3 +4,4 @@ export {
     type ErrorResponse,
 } from './middleware/error-handler';
 export { createRequestLoggerMiddleware } from './middleware/logging';
+export { schemaValidator } from './middleware/schema-validator';

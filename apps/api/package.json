@@ -17,11 +17,10 @@
         "start": "node --env-file=.env dist/index.js"
     },
     "dependencies": {
+        "@hono/node-server": "^2.0.6",
         "@ts-template/db": "workspace:*",
         "@ts-template/server": "workspace:*",
         "@ts-template/types": "workspace:*",
-        "@hono/node-server": "^2.0.6",
-        "@hono/zod-validator": "^0.8.0",
         "hono": "^4.12.27",
         "toml": "^4.1.2",
         "zod": "^4.4.3"

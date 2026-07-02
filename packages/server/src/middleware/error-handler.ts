@@ -13,7 +13,7 @@ export function createErrorHandler(logger: Logger): ErrorHandler {
 
         if (err instanceof HTTPException) {
             logger.warn(
-                { requestId, status: err.status, message: err.message },
+                { requestId, status: err.status, error: err.message },
                 'HTTP error'
             );
             return c.json<ErrorResponse>({ error: err.message }, err.status);
