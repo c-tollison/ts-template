@@ -27,6 +27,7 @@ const NAME_PATTERN = /^[a-z][a-z0-9]*(-[a-z0-9]+)*$/;
 const COPY_SKIP = new Set([
     'scripts/copy-project.mjs',
     'TEMPLATE_CHECKLIST.md',
+    'LICENSE',
     'pnpm-lock.yaml',
 ]);
 
