@@ -1,22 +1,12 @@
-import { Stage } from '@ts-template/types';
 import type { cors } from 'hono/cors';
+
+import type { Config } from './config';
 
 type CorsOptions = NonNullable<Parameters<typeof cors>[0]>;
 
-function getOriginsForStage(stage: Stage): string[] {
-    switch (stage) {
-        case Stage.Local:
-            return ['http://localhost:5173'];
-        case Stage.Dev:
-            return [];
-        case Stage.Prod:
-            return [];
-    }
-}
-
-export function getCorsConfig(stage: Stage): CorsOptions {
+export function getCorsConfig(config: Config): CorsOptions {
     return {
-        origin: getOriginsForStage(stage),
+        origin: config.corsOrigins,
         allowHeaders: ['Content-Type', 'Authorization', 'x-workspace-id'],
         allowMethods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
         maxAge: 86400,

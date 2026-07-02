@@ -19,7 +19,7 @@ import helloWorld from './routes/hello-world';
 export function createApp(config: Config) {
     const app = new Hono();
 
-    app.use('*', cors(getCorsConfig(config.stage)));
+    app.use('*', cors(getCorsConfig(config)));
     app.use('*', secureHeaders());
     app.use('*', requestId());
     app.use('*', createRequestLoggerMiddleware(logger()));

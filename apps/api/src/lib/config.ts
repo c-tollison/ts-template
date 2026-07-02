@@ -9,6 +9,7 @@ const StageSchema = z.enum(Stage);
 
 const StageConfigSchema = z.object({
     port: z.number(),
+    corsOrigins: z.array(z.string()),
 });
 
 const ConfigFileSchema = z.record(z.string(), StageConfigSchema);
@@ -25,6 +26,7 @@ export interface DbConfig {
 export interface Config {
     stage: Stage;
     port: number;
+    corsOrigins: string[];
     db: DbConfig;
 }
 
@@ -40,9 +42,14 @@ export function loadConfig(stage: Stage, db: DbConfig): Config {
         throw new Error(`No config found for stage: ${stage}`);
     }
 
+    if (stageConfig.corsOrigins.length === 0) {
+        throw new Error(`corsOrigins must not be empty for stage: ${stage}`);
+    }
+
     return {
         stage,
         port: stageConfig.port,
+        corsOrigins: stageConfig.corsOrigins,
         db,
     };
 }
