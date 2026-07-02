@@ -222,10 +222,10 @@ function main() {
             'Usage: node scripts/copy-project.mjs <new-name> <destination-path>'
         );
         console.error(
-            'Error: <new-name> must be kebab-case (lowercase letters, digits, hyphens), e.g. "invoice-agent"'
+            'Error: <new-name> must be kebab-case (lowercase letters, digits, hyphens), e.g. "mimic"'
         );
         console.error(
-            '       <destination-path> is where the new project will be created, e.g. "../invoice-agent"'
+            '       <destination-path> is where the new project will be created, e.g. "../mimic"'
         );
         process.exit(1);
     }
