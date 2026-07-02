@@ -76,6 +76,16 @@
                     }
                 }
             }
+        },
+        {
+            "includes": ["**/*.d.ts"],
+            "linter": {
+                "rules": {
+                    "correctness": {
+                        "noUnusedVariables": "off"
+                    }
+                }
+            }
         }
     ]
 }
