@@ -8,14 +8,16 @@
         "preview": "vite preview"
     },
     "dependencies": {
+        "@tailwindcss/vite": "^4.3.2",
+        "@tanstack/react-query": "^5.101.2",
         "@ts-template/api": "workspace:*",
         "@ts-template/types": "workspace:*",
-        "@tailwindcss/vite": "^4.3.2",
-        "hono": "^4.12.27",
+        "hono": "catalog:",
         "react": "^19.2.7",
         "react-dom": "^19.2.7",
         "react-router": "^8.1.0",
-        "tailwindcss": "^4.3.2"
+        "tailwindcss": "^4.3.2",
+        "zod": "catalog:"
     },
     "devDependencies": {
         "@types/node": "^26.0.1",
