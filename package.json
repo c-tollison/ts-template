@@ -1,0 +1,35 @@
+{
+    "name": "ts-template",
+    "packageManager": "pnpm@11.9.0",
+    "engines": {
+        "node": "24.12.0",
+        "pnpm": "11.9.0"
+    },
+    "engineStrict": true,
+    "scripts": {
+        "check": "biome check --write .",
+        "check:ci": "biome check .",
+        "prepare": "husky",
+        "copy": "node scripts/copy-project.mjs",
+        "dev": "concurrently -n api,ui -c blue,green \"pnpm --filter @ts-template/api dev\" \"pnpm --filter @ts-template/ui dev\"",
+        "build": "pnpm --filter @ts-template/types build && pnpm --filter @ts-template/server build && pnpm --filter @ts-template/api build && pnpm --filter @ts-template/ui build",
+        "local:up": "docker compose up -d && sleep 2 && pnpm --filter db migrate && pnpm --filter db seed",
+        "local:down": "docker compose down && (docker volume rm ts_template_pgdata ts_template_redisdata || true)",
+        "local:reset": "pnpm local:down && pnpm local:up",
+        "db:generate": "pnpm --filter @ts-template/db generate",
+        "db:migrate": "pnpm --filter @ts-template/db migrate",
+        "test": "vitest"
+    },
+    "devDependencies": {
+        "@biomejs/biome": "^2.5.0",
+        "husky": "^9.1.7",
+        "lint-staged": "^17.0.8",
+        "concurrently": "^10.0.3",
+        "vitest": "^4.1.9"
+    },
+    "lint-staged": {
+        "*.{js,ts,jsx,tsx}": [
+            "pnpm check"
+        ]
+    }
+}
