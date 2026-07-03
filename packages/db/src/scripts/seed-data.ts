@@ -1,7 +1,7 @@
 import { sql } from 'drizzle-orm';
 import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
 
-import type * as schema from '../schema';
+import type * as schema from '../schema/index.js';
 
 export type SeedContext = {
     db: NodePgDatabase<typeof schema>;

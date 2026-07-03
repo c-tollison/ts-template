@@ -2,7 +2,7 @@ import { createDb, type Database } from '@ts-template/db';
 import type { Logger } from '@ts-template/server';
 import { Stage } from '@ts-template/types';
 
-import type { Config } from './config';
+import type { Config } from './config.js';
 
 export function createDbClient(config: Config, logger: Logger): Database {
     const { host, port, user, password, name, maxConnections } = config.db;

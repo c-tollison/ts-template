@@ -1,7 +1,7 @@
 import type { MiddlewareHandler } from 'hono';
 import { createMiddleware } from 'hono/factory';
 
-import type { Logger } from '../logger';
+import type { Logger } from '../logger.js';
 
 export function createRequestLoggerMiddleware(
     logger: Logger

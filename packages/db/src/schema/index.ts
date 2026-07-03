@@ -1,2 +1,2 @@
-export * from './primitives';
-export * from './users';
+export * from './primitives.js';
+export * from './users.js';

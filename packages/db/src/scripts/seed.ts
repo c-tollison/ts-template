@@ -1,8 +1,8 @@
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { Pool } from 'pg';
 
-import { runSeed } from './seed-data';
-import * as schema from '../schema';
+import { runSeed } from './seed-data.js';
+import * as schema from '../schema/index.js';
 
 async function main() {
     const connectionString =

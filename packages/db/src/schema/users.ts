@@ -1,6 +1,6 @@
 import { text } from 'drizzle-orm/pg-core';
 
-import { appSchema, createdAt, id } from './primitives';
+import { appSchema, createdAt, id } from './primitives.js';
 
 export const users = appSchema.table('users', {
     id: id(),

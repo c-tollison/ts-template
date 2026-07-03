@@ -10,10 +10,10 @@ import { HTTPException } from 'hono/http-exception';
 import { requestId } from 'hono/request-id';
 import { secureHeaders } from 'hono/secure-headers';
 
-import { type Config, loadConfig } from './lib/config';
-import { db, init, logger } from './lib/container';
-import { getCorsConfig } from './lib/cors';
-import users from './routes/users';
+import { type Config, loadConfig } from './lib/config.js';
+import { db, init, logger } from './lib/container.js';
+import { getCorsConfig } from './lib/cors.js';
+import users from './routes/users.js';
 
 export function createApp(config: Config) {
     const app = new Hono();

@@ -1,7 +1,7 @@
 import type { ErrorHandler } from 'hono';
 import { HTTPException } from 'hono/http-exception';
 
-import type { Logger } from '../logger';
+import type { Logger } from '../logger.js';
 
 export interface ErrorResponse {
     error: string;

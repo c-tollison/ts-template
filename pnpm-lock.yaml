@@ -6,9 +6,21 @@ settings:
 
 catalogs:
   default:
+    '@hono/zod-validator':
+      specifier: ^0.8.0
+      version: 0.8.0
+    drizzle-orm:
+      specifier: ^0.45.2
+      version: 0.45.2
     hono:
       specifier: ^4.12.27
       version: 4.12.27
+    pg:
+      specifier: ^8.22.0
+      version: 8.22.0
+    pino:
+      specifier: ^10.3.1
+      version: 10.3.1
     zod:
       specifier: ^4.4.3
       version: 4.4.3
@@ -134,10 +146,10 @@ importers:
         specifier: workspace:*
         version: link:../types
       drizzle-orm:
-        specifier: ^0.45.2
+        specifier: 'catalog:'
         version: 0.45.2(@types/pg@8.20.0)(pg@8.22.0)
       pg:
-        specifier: ^8.22.0
+        specifier: 'catalog:'
         version: 8.22.0
     devDependencies:
       '@types/node':
@@ -159,7 +171,7 @@ importers:
   packages/server:
     dependencies:
       '@hono/zod-validator':
-        specifier: ^0.8.0
+        specifier: 'catalog:'
         version: 0.8.0(hono@4.12.27)(zod@4.4.3)
       '@ts-template/types':
         specifier: workspace:*
@@ -168,7 +180,7 @@ importers:
         specifier: 'catalog:'
         version: 4.12.27
       pino:
-        specifier: ^10.3.1
+        specifier: 'catalog:'
         version: 10.3.1
       zod:
         specifier: 'catalog:'

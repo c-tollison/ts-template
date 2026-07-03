@@ -1,8 +1,8 @@
 import type { Database } from '@ts-template/db';
 import { createLogger, type Logger } from '@ts-template/server';
 
-import type { Config } from './config';
-import { createDbClient } from './db';
+import type { Config } from './config.js';
+import { createDbClient } from './db.js';
 
 let _logger: Logger | undefined;
 let _config: Config | undefined;

@@ -12,7 +12,7 @@
         "prepare": "husky",
         "copy": "node scripts/copy-project.mjs",
         "dev": "concurrently -n api,ui -c blue,green \"pnpm --filter @ts-template/api dev\" \"pnpm --filter @ts-template/ui dev\"",
-        "build": "pnpm --filter @ts-template/types build && pnpm --filter @ts-template/server build && pnpm --filter @ts-template/api build && pnpm --filter @ts-template/ui build",
+        "build": "pnpm --filter @ts-template/types build && pnpm --filter @ts-template/server build && pnpm --filter @ts-template/db build && pnpm --filter @ts-template/api build && pnpm --filter @ts-template/ui build",
         "local:up": "docker compose up -d && sleep 2 && pnpm --filter db migrate && pnpm --filter db seed",
         "local:down": "docker compose down && (docker volume rm ts_template_pgdata || true)",
         "local:reset": "pnpm local:down && pnpm local:up",
