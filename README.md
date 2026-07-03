@@ -46,10 +46,13 @@ pnpm install
 Copy env files:
 
 ```bash
+cp .env.example .env
 cp apps/api/.env.example apps/api/.env
 cp apps/ui/.env.example apps/ui/.env.local
 cp packages/db/.env.example packages/db/.env
 ```
+
+The root `.env` sets `POSTGRES_PORT` for `docker-compose.yml` (defaults to `5432`). Only change it if that port is already taken — e.g. you're running another copy of this template locally — and if you do, update the port in `apps/api/.env` (`DB_PORT`) and `packages/db/.env` (`DATABASE_URL_ADMIN`) to match.
 
 Start Postgres and run migrations — see [packages/db](packages/db) for why there's no migration yet on a fresh clone:
 
