@@ -13,8 +13,8 @@
     },
     "scripts": {
         "build": "tsc",
-        "generate": "drizzle-kit generate",
-        "migrate": "drizzle-kit migrate",
+        "generate": "drizzle-kit generate --config=src/drizzle.config.ts",
+        "migrate": "drizzle-kit migrate --config=src/drizzle.config.ts",
         "seed": "node --env-file .env --import tsx src/scripts/seed.ts"
     },
     "devDependencies": {

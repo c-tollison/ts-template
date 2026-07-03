@@ -11,6 +11,8 @@
             "!**/node_modules",
             "!.vscode",
             "!**/.vscode",
+            "!.claude",
+            "!**/.claude",
             "!dist",
             "!**/dist",
             "!build",
