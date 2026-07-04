@@ -50,6 +50,39 @@ pnpm preview
 
 Env vars (`.env.local`, see `.env.example`): `VITE_API_URL`.
 
+## Example
+
+`src/lib/api.ts` builds the RPC client off the API's own type — no hand-written client, no generated OpenAPI types,
+just `hc<ApiRoutes>(...)`:
+
+```ts
+export const client = hc<ApiRoutes>(API_BASE, {
+    fetch: customFetch,
+    init: { credentials: 'include' },
+});
+```
+
+A mutation hook wraps a call through that client in TanStack Query, sharing the same `CreateUserRequest` type the API
+validates against:
+
+```ts
+// src/hooks/use-user-mutations.ts
+export function useCreateUserMutation() {
+    return useMutation({
+        mutationFn: async (data: CreateUserRequest) => {
+            const res = await client.api.users.$post({ json: data });
+            if (!res.ok) return throwApiError(res);
+            return res.json();
+        },
+    });
+}
+```
+
+`src/pages/users.tsx` is the full loop: `useValidatedSubmit` runs `CreateUserRequestSchema.safeParse` client-side
+before the mutation ever fires, so bad input never leaves the browser, and whatever does get sent is already the
+shape the API expects. If `client.api.users.$post`'s payload stops matching `CreateUserRequest`, that's a type error
+here, not a runtime bug in prod — the same guarantee described in the root README, just from the frontend side.
+
 ## Docs
 
 - [Vite docs](https://vite.dev/guide)
