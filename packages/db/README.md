@@ -71,6 +71,32 @@ All tables live in the `app` Postgres schema (created by `init-db.sql`, not by a
 
 After changing a table in `src/schema`, run `pnpm generate` and commit the resulting SQL file in `drizzle/`.
 
+## Example
+
+Tables are plain Drizzle definitions, built on top of a couple of shared column helpers so every table gets the same
+id/timestamp conventions for free:
+
+```ts
+// src/schema/users.ts
+export const users = appSchema.table('users', {
+    id: id(),
+    name: text('name').notNull(),
+    createdAt: createdAt(),
+});
+```
+
+`createDb` (in `src/index.ts`) wraps that schema in a Drizzle client backed by a `pg` pool. The API doesn't call it
+directly — `apps/api/src/lib/container.ts` builds one client at startup and exposes it through `db()`, so the rest of
+the app just does:
+
+```ts
+const [user] = await db().insert(schema.users).values({ name }).returning();
+```
+
+Since `schema.users` is the same object `drizzle-kit generate` reads to produce migrations, an insert like this only
+type-checks if the shape matches whatever's actually been migrated — which is most of the "catch it at compile time"
+value I mentioned in the root README.
+
 ## Docs
 
 - [Drizzle ORM docs](https://orm.drizzle.team/docs/overview)

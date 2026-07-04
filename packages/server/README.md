@@ -31,6 +31,41 @@ src/
     schema-validator.ts           schemaValidator() — zod-backed request validation
 ```
 
+## Example
+
+`schemaValidator` is a thin wrapper around `@hono/zod-validator` — it exists so a failed validation comes back as
+`{ error: string }` instead of Zod's raw issue array, which keeps every error response in the same shape:
+
+```ts
+// packages/server/src/middleware/schema-validator.ts
+export function schemaValidator<
+    Target extends keyof ValidationTargets,
+    TSchema extends ZodType,
+>(target: Target, schema: TSchema) {
+    return zValidator(target, schema, (result, _c) => {
+        if (!result.success) {
+            const first = result.error.issues[0];
+            throw new HTTPException(400, {
+                message: first?.message ?? 'Invalid request',
+            });
+        }
+    });
+}
+```
+
+An API route uses it like this (see [apps/api](../../apps/api) for the full route):
+
+```ts
+app.post('/', schemaValidator('json', CreateUserRequestSchema), async (c) => {
+    const { name } = c.req.valid('json');
+    // ...
+});
+```
+
+That `HTTPException` then flows into `createErrorHandler`, which is registered once on the app with `app.onError(...)`
+and turns any thrown `HTTPException` (or unexpected error) into a logged, consistently shaped JSON response — so
+routes never have to try/catch just to format an error.
+
 ## Docs
 
 - [Pino docs](https://getpino.io/#/docs/api)

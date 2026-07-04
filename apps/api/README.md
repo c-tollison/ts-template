@@ -65,6 +65,36 @@ Mounted under `/api`:
 - `GET /api/health`
 - `POST /api/users`
 
+## Example
+
+A route is a small `Hono` instance that validates its input with `schemaValidator` (from `@ts-template/server`) and
+talks to Postgres through the shared `db()` client:
+
+```ts
+// src/routes/users.ts
+const users = new Hono().post(
+    '/',
+    schemaValidator('json', CreateUserRequestSchema),
+    async (c) => {
+        const { name } = c.req.valid('json');
+
+        const [user] = await db()
+            .insert(schema.users)
+            .values({ name })
+            .returning();
+
+        return c.json(user, 201);
+    }
+);
+```
+
+It gets mounted in `src/index.ts` with `api.route('/users', users)`. `createApp()`'s return type is exported as
+`ApiRoutes` — that's the type the UI imports into `hc<ApiRoutes>(...)` to get a fully typed RPC client, so a new route
+here shows up on the frontend with no separate client code to write (see [apps/ui](../ui)).
+
+`db()`, `logger()`, and `config()` all come from `src/lib/container.ts`, which is initialized once in `main()` before
+the server starts listening — routes and middleware just pull from it, they don't construct their own clients.
+
 ## Docs
 
 - [Hono docs](https://hono.dev/docs)
