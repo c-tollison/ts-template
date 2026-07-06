@@ -108,11 +108,13 @@ function buildReplacer(fromKebab, toKebab) {
         kebab: fromKebab,
         snake: fromKebab.replace(/-/g, '_'),
         title: toTitleCase(fromKebab),
+        spaced: fromKebab.replace(/-/g, ' '),
     };
     const to = {
         kebab: toKebab,
         snake: toKebab.replace(/-/g, '_'),
         title: toTitleCase(toKebab),
+        spaced: toKebab.replace(/-/g, ' '),
     };
 
     const rules = [
@@ -124,6 +126,7 @@ function buildReplacer(fromKebab, toKebab) {
         [new RegExp(`\\b${escapeRegExp(from.snake)}_`, 'g'), `${to.snake}_`],
         [new RegExp(`\\b${escapeRegExp(from.kebab)}-`, 'g'), `${to.kebab}-`],
         [new RegExp(`\\b${escapeRegExp(from.title)}\\b`, 'g'), to.title],
+        [new RegExp(`\\b${escapeRegExp(from.spaced)}\\b`, 'g'), to.spaced],
         [new RegExp(`\\b${escapeRegExp(from.snake)}\\b`, 'g'), to.snake],
         [new RegExp(`\\b${escapeRegExp(from.kebab)}\\b`, 'g'), to.kebab],
     ];
