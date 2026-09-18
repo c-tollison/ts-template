@@ -1,6 +1,5 @@
-import type { cors } from 'hono/cors';
-
 import type { Config } from './config.js';
+import type { cors } from 'hono/cors';
 
 type CorsOptions = NonNullable<Parameters<typeof cors>[0]>;
 

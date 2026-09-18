@@ -55,13 +55,15 @@
                     "level": "on",
                     "options": {
                         "groups": [
-                            ":PACKAGE:",
+                            [":NODE:", ":BUN:"],
                             ":BLANK_LINE:",
-                            ":NODE:",
+                            ["PACKAGE:", "!@ts-template/**"],
                             ":BLANK_LINE:",
-                            ["@api/**", "@ui/**"],
+                            "@ts-template/**",
+                            ":BLANK_LINE",
+                            "@/**",
                             ":BLANK_LINE:",
-                            ["./**"]
+                            [":PATH:"]
                         ]
                     }
                 }
@@ -69,6 +71,37 @@
         }
     },
     "overrides": [
+        {
+            "includes": ["**/*.d.ts"],
+            "linter": {
+                "rules": {
+                    "correctness": {
+                        "noUnusedVariables": "off"
+                    }
+                }
+            }
+        },
+        {
+            "includes": ["**/*.vue"],
+            "linter": {
+                "rules": {
+                    "correctness": {
+                        "noUnusedVariables": "off",
+                        "noUnusedImports": "off"
+                    }
+                }
+            }
+        },
+        {
+            "includes": ["**/*.svg"],
+            "linter": {
+                "rules": {
+                    "a11y": {
+                        "noSvgWithoutTitle": "off"
+                    }
+                }
+            }
+        },
         {
             "includes": ["apps/api/src/**"],
             "linter": {
@@ -80,11 +113,15 @@
             }
         },
         {
-            "includes": ["**/*.d.ts"],
+            "includes": ["apps/web/src/components/shadcn-components/**"],
             "linter": {
                 "rules": {
-                    "correctness": {
-                        "noUnusedVariables": "off"
+                    "suspicious": {
+                        "noExplicitAny": "off"
+                    },
+                    "style": {
+                        "noNonNullAssertion": "off",
+                        "useVueMultiWordComponentNames": "off"
                     }
                 }
             }

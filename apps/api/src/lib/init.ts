@@ -1,0 +1,45 @@
+import type { Database } from '@ts-template/db';
+
+import type { Config } from './config.js';
+import { createDbClient } from './db.js';
+import { createLogger, type Logger } from './logger.js';
+
+export interface Container {
+    logger: Logger;
+    config: Config;
+    db: Database;
+}
+
+export async function createContainer(cfg: Config): Promise<Container> {
+    const logger = createLogger(cfg.stage);
+    const db = createDbClient(cfg, logger);
+
+    return {
+        logger,
+        config: cfg,
+        db,
+    };
+}
+
+let _container: Container | undefined;
+
+export function setContainer(container: Container): void {
+    _container = container;
+}
+
+function assertInit<T>(value: T | undefined, name: string): T {
+    if (!value) {
+        throw new Error(
+            `Container not initialized: '${name}'. Call init() first.`
+        );
+    }
+    return value;
+}
+
+export const logger = (): Logger => assertInit(_container, 'logger').logger;
+export const config = (): Config => assertInit(_container, 'config').config;
+export const db = (): Database => assertInit(_container, 'db').db;
+
+export async function init(cfg: Config): Promise<void> {
+    setContainer(await createContainer(cfg));
+}

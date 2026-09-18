@@ -2,6 +2,10 @@
     "name": "@ts-template/db",
     "version": "0.0.0",
     "type": "module",
+    "files": [
+        "dist",
+        "drizzle"
+    ],
     "main": "./dist/index.js",
     "types": "./dist/index.d.ts",
     "exports": {
@@ -14,15 +18,15 @@
     "scripts": {
         "build": "tsc",
         "generate": "drizzle-kit generate --config=src/drizzle.config.ts",
-        "migrate": "drizzle-kit migrate --config=src/drizzle.config.ts",
-        "seed": "node --env-file .env --import tsx src/scripts/seed.ts"
+        "migrate": "node --env-file-if-exists=.env --import tsx src/scripts/migrate.ts",
+        "seed": "node --env-file-if-exists=.env --import tsx src/scripts/seed.ts"
     },
     "devDependencies": {
-        "@types/node": "^26.0.1",
+        "@types/node": "catalog:",
         "@types/pg": "^8.20.0",
         "drizzle-kit": "^0.31.10",
-        "tsx": "^4.22.4",
-        "typescript": "~6.0.3"
+        "tsx": "catalog:",
+        "typescript": "catalog:"
     },
     "dependencies": {
         "@ts-template/types": "workspace:*",

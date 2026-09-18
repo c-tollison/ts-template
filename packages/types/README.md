@@ -1,6 +1,6 @@
 # @ts-template/types
 
-Shared TypeScript types and Zod schemas, used by both the API and UI (and by `@ts-template/db`).
+Shared TypeScript types and Zod schemas, used by both the API and web app (and by `@ts-template/db`).
 
 ## Stack
 
@@ -20,17 +20,19 @@ No `dev`/`start` — this package has no runtime entrypoint of its own; consumer
 
 ```
 src/
+  api.ts           ApiErrorResponse and other cross-cutting API shapes
   config.ts        Stage enum, shared config types
-  schemas/
-    users.ts        e.g. CreateUserRequestSchema
+  schemas/         Request/response Zod schemas — add one file per resource
 ```
 
-Add new request/response contracts here so the API and UI stay in sync on a single source of truth.
+There's no `schemas/` example yet since the API only ships the `hello-world` route (query-validated inline, no
+request body worth a shared schema). Add request/response contracts here as you add routes, so the API and web app
+stay in sync on a single source of truth.
 
 ## Example
 
-A schema is just a Zod object, exported alongside its inferred type so both the API and the UI can import the type
-without re-deriving it:
+A schema is just a Zod object, exported alongside its inferred type so both the API and the web app can import the
+type without re-deriving it:
 
 ```ts
 // src/schemas/users.ts
@@ -41,9 +43,9 @@ export const CreateUserRequestSchema = z.object({
 export type CreateUserRequest = z.infer<typeof CreateUserRequestSchema>;
 ```
 
-The API imports `CreateUserRequestSchema` to validate the request body (see [apps/api](../../apps/api)), and the UI
-imports `CreateUserRequest` for the mutation's input type (see [apps/ui](../../apps/ui)) — one schema, no drift
-between the two.
+The API would import `CreateUserRequestSchema` to validate the request body (see [apps/api](../../apps/api)); the
+web app gets the same shape for free through the Hono RPC client's inferred types (see [apps/web](../../apps/web)) —
+one schema, no drift between the two.
 
 I hand-roll these rather than generating them from the Drizzle schema with `drizzle-zod`. That's a deliberate
 trade-off: it's more typing up front, and it means a DB column change won't automatically show up here, but I'd

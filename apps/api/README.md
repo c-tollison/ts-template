@@ -1,101 +1,53 @@
 # @ts-template/api
 
-Hono HTTP API server, built on `@hono/node-server`.
+The Hono API, running on Node.js via `@hono/node-server`.
 
-## Stack
-
-- [Hono](https://hono.dev) 4 — router/middleware
-- [@ts-template/server](../../packages/server) — shared logging, error handling, graceful shutdown, schema validation
-- [@ts-template/db](../../packages/db) — Drizzle client
-- [@ts-template/types](../../packages/types) — shared zod schemas
-- Config: `toml` (`config/config.toml`, one table per stage) + `zod` for env validation
-- [tsx](https://tsx.is) — dev-time TS execution/watch
-- TypeScript, `tsc --watch` for type checking in dev
-
-## Setup
+## Scripts
 
 ```bash
-cp .env.example .env
-```
-
-Requires Postgres running (see [packages/db](../../packages/db) or `pnpm local:up` from repo root).
-
-## Commands
-
-Run server (watch) + type-check (watch) concurrently:
-
-```bash
+# Run the API dev server plus tsc --watch (via concurrently)
 pnpm dev
-```
 
-Run only the server in watch mode:
-
-```bash
+# Run the API dev server only (tsx watch)
 pnpm dev:server
-```
 
-Run only the type-check watcher:
-
-```bash
+# Run tsc --watch only
 pnpm dev:types
-```
 
-Compile to `dist/`:
-
-```bash
+# Build for production
 pnpm build
-```
 
-Run the compiled server — requires `pnpm build` first:
-
-```bash
+# Run the built server
 pnpm start
 ```
 
 ## Config
 
-Env vars (`.env`, see `.env.example`): `STAGE`, `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`, `DB_MAX_CONNECTIONS`.
+`.env` holds secrets and per-machine overrides. Copy `.env.example` to `.env`
+to get started. `config/config.toml` holds the per-stage, non-secret
+settings and is checked into the repo.
 
-Per-stage server/CORS settings live in `config/config.toml`, keyed by `STAGE` (`local` / `dev` / `prod`).
+## Docker
 
-## Routes
+Build from the repo root so workspace packages are in context. Local
+Postgres must be up (`pnpm local:start`); the container reaches it as
+`ts-template-db:5432` on the `ts-template_default` network.
 
-Mounted under `/api`:
+```bash
+# Build
+docker build -f apps/api/Dockerfile -t ts-template-api .
 
-- `GET /api/health`
-- `POST /api/users`
+# Apply migrations from the image
+docker run --rm --network ts-template_default \
+  -e DATABASE_URL=postgres://ts_template:ts_template@ts-template-db:5432/ts_template \
+  ts-template-api node node_modules/@ts-template/db/dist/scripts/migrate.js
 
-## Example
+# Run the API, then hit it from a sibling container (no ports are published)
+docker run -d --name ts-template-api-test --network ts-template_default \
+  -e STAGE=deployed -e DATABASE_URL=postgres://ts_template:ts_template@ts-template-db:5432/ts_template ts-template-api
+docker run --rm --network ts-template_default ts-template-api \
+  node -e "fetch('http://ts-template-api-test:3001/api/health').then(r=>r.text()).then(console.log)"
 
-A route is a small `Hono` instance that validates its input with `schemaValidator` (from `@ts-template/server`) and
-talks to Postgres through the shared `db()` client:
-
-```ts
-// src/routes/users.ts
-const users = new Hono().post(
-    '/',
-    schemaValidator('json', CreateUserRequestSchema),
-    async (c) => {
-        const { name } = c.req.valid('json');
-
-        const [user] = await db()
-            .insert(schema.users)
-            .values({ name })
-            .returning();
-
-        return c.json(user, 201);
-    }
-);
+# Clean up
+docker rm -f ts-template-api-test
 ```
-
-It gets mounted in `src/index.ts` with `api.route('/users', users)`. `createApp()`'s return type is exported as
-`ApiRoutes` — that's the type the UI imports into `hc<ApiRoutes>(...)` to get a fully typed RPC client, so a new route
-here shows up on the frontend with no separate client code to write (see [apps/ui](../ui)).
-
-`db()`, `logger()`, and `config()` all come from `src/lib/container.ts`, which is initialized once in `main()` before
-the server starts listening — routes and middleware just pull from it, they don't construct their own clients.
-
-## Docs
-
-- [Hono docs](https://hono.dev/docs)
-- [Hono Node.js adapter](https://hono.dev/docs/getting-started/nodejs)

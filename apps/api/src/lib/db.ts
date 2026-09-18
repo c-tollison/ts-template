@@ -1,36 +1,31 @@
 import { createDb, type Database } from '@ts-template/db';
-import type { Logger } from '@ts-template/server';
-import { Stage } from '@ts-template/types';
 
 import type { Config } from './config.js';
+import type { Logger } from './logger.js';
 
 export function createDbClient(config: Config, logger: Logger): Database {
-    const { host, port, user, password, name, maxConnections } = config.db;
-    const ssl =
-        config.stage === Stage.Local ? false : { rejectUnauthorized: true };
+    const { url, maxConnections, ssl } = config.db;
 
+    const parsed = new URL(url);
     logger.info(
         {
             db: {
-                host,
-                port,
-                database: name,
+                host: parsed.hostname,
+                port: parsed.port,
+                database: parsed.pathname.slice(1),
+                user: parsed.username,
                 maxConnections,
-                sslEnabled: Boolean(ssl),
+                ssl,
             },
         },
         'Creating database client'
     );
 
     return createDb({
-        host,
-        port,
-        user,
-        password,
-        database: name,
-        idleTimeoutMillis: 30000,
-        connectionTimeoutMillis: 5000,
+        connectionString: url,
         max: maxConnections,
-        ssl,
+        idleTimeoutMillis: 30_000,
+        connectionTimeoutMillis: 5_000,
+        ssl: ssl ? { rejectUnauthorized: true } : false,
     });
 }

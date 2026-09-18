@@ -1,0 +1,23 @@
+name: ts-template
+
+services:
+    postgres:
+        image: postgres:18.1
+        container_name: ts-template-db
+        restart: unless-stopped
+        environment:
+            POSTGRES_USER: ts_template
+            POSTGRES_PASSWORD: ts_template
+            POSTGRES_DB: ts_template
+        ports:
+            - '127.0.0.1:5433:5432'
+        volumes:
+            - pgdata:/var/lib/postgresql
+        healthcheck:
+            test: ['CMD-SHELL', 'pg_isready -U ts_template -d ts_template']
+            interval: 5s
+            timeout: 5s
+            retries: 10
+
+volumes:
+    pgdata:
