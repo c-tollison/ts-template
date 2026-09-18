@@ -7,6 +7,7 @@
         "customConditions": ["development"],
         "types": ["node"],
         "strict": true,
+        "noUncheckedIndexedAccess": true,
         "verbatimModuleSyntax": true,
         "skipLibCheck": true,
         "noFallthroughCasesInSwitch": true,

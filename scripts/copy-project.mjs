@@ -47,6 +47,7 @@ const TEXT_EXTENSIONS = new Set([
     '.toml',
     '.md',
     '.css',
+    '.vue',
 ]);
 
 function isValidName(name) {
@@ -124,6 +125,7 @@ function buildReplacer(fromKebab, toKebab) {
         ],
         [new RegExp(`\\b${escapeRegExp(from.kebab)}/`, 'g'), `${to.kebab}/`],
         [new RegExp(`\\b${escapeRegExp(from.snake)}_`, 'g'), `${to.snake}_`],
+        [new RegExp(`\\b${escapeRegExp(from.kebab)}_`, 'g'), `${to.kebab}_`],
         [new RegExp(`\\b${escapeRegExp(from.kebab)}-`, 'g'), `${to.kebab}-`],
         [new RegExp(`\\b${escapeRegExp(from.title)}\\b`, 'g'), to.title],
         [new RegExp(`\\b${escapeRegExp(from.spaced)}\\b`, 'g'), to.spaced],

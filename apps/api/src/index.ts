@@ -1,48 +1,12 @@
+import { createApp } from './app.js';
+import { loadConfig } from './lib/config.js';
+import { db, init, logger } from './lib/init.js';
+import { registerGracefulShutdown } from './lib/shutdown.js';
 import { serve } from '@hono/node-server';
-import {
-    createErrorHandler,
-    createRequestLoggerMiddleware,
-    registerGracefulShutdown,
-} from '@ts-template/server';
-import { Hono } from 'hono';
-import { cors } from 'hono/cors';
-import { HTTPException } from 'hono/http-exception';
-import { requestId } from 'hono/request-id';
-import { secureHeaders } from 'hono/secure-headers';
 
-import { type Config, loadConfig } from './lib/config.js';
-import { db, init, logger } from './lib/container.js';
-import { getCorsConfig } from './lib/cors.js';
-import users from './routes/users.js';
-
-export function createApp(config: Config) {
-    const app = new Hono();
-
-    app.use('*', cors(getCorsConfig(config.cors)));
-    app.use('*', secureHeaders());
-    app.use('*', requestId());
-    app.use('*', createRequestLoggerMiddleware(logger()));
-
-    app.notFound(() => {
-        throw new HTTPException(404, { message: 'Route not found' });
-    });
-
-    app.onError(createErrorHandler(logger()));
-
-    const api = app.basePath('/api');
-    api.get('/health', (c) => c.json({ status: 'ok' }));
-
-    return api.route('/users', users);
-}
-
-export type ApiRoutes = ReturnType<typeof createApp>;
-
-function main() {
+async function main() {
     const config = loadConfig();
-
-    init(config);
-
-    logger().info({ stage: config.stage }, 'Starting server');
+    await init(config);
 
     const app = createApp(config);
 
@@ -59,4 +23,8 @@ function main() {
     registerGracefulShutdown(server, logger(), () => db().$client.end());
 }
 
-main();
+main().catch((err) => {
+    // biome-ignore lint/suspicious/noConsole: Logger was unable to start
+    console.error('Fatal startup error', err);
+    process.exit(1);
+});

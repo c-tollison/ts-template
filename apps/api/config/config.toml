@@ -1,21 +1,25 @@
+[local]
+appUrl = 'http://localhost:5173'
+
 [local.server]
 port = 3001
 
 [local.cors]
 origins = ['http://localhost:5173']
 
-# TODO(template): fill in real origins before deploying dev/prod.
-# Only the active stage is validated, so these placeholders don't
-# block local development.
+[local.db]
+maxConnections = 5
+ssl = false
 
-[dev.server]
+[deployed]
+appUrl = 'https://ts-template.coji-dev.com'
+
+[deployed.server]
 port = 3001
 
-[dev.cors]
-origins = []
+[deployed.cors]
+origins = ['https://ts-template.coji-dev.com']
 
-[prod.server]
-port = 3001
-
-[prod.cors]
-origins = []
+[deployed.db]
+maxConnections = 10
+ssl = false

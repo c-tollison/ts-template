@@ -1,19 +1,81 @@
-name: ts_template
+# Production stack. Lives at ~/ts-template/ on the VPS next to a .env (see
+# .env.example). Joins the shared `vps` (Traefik) and `db` (Postgres)
+# networks from vps-infra. Nothing here publishes a port; Traefik is the only
+# way in, and only api and migrate can reach Postgres.
+#
+# IMAGE_TAG comes from .env; vps-infra's deploy.sh writes it on every deploy.
+# To roll back, set it to an older `sha-<commit>` and `docker compose up -d`.
+
+name: ts-template
 
 services:
-  postgres:
-    image: postgres:18.1
-    restart: always
-    container_name: ts-template-db
-    environment:
-      POSTGRES_USER: ts_template
-      POSTGRES_PASSWORD: ts_template
-      POSTGRES_DB: ts_template
-    ports:
-      - "${POSTGRES_PORT:-5432}:5432"
-    volumes:
-      - pgdata:/var/lib/postgresql
-      - ./packages/db/scripts/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql:ro
+    migrate:
+        image: ghcr.io/c-tollison/ts-template-api:${IMAGE_TAG:?set IMAGE_TAG in .env}
+        command: node node_modules/@ts-template/db/dist/scripts/migrate.js
+        env_file: .env
+        networks: [db]
+        security_opt:
+            - no-new-privileges:true
+        read_only: true
+        tmpfs: [/tmp]
+        mem_limit: 256m
 
-volumes:
-  pgdata:
+    api:
+        image: ghcr.io/c-tollison/ts-template-api:${IMAGE_TAG:?set IMAGE_TAG in .env}
+        restart: unless-stopped
+        env_file: .env
+        depends_on:
+            migrate:
+                condition: service_completed_successfully
+        networks: [vps, db]
+        security_opt:
+            - no-new-privileges:true
+        read_only: true
+        tmpfs: [/tmp]
+        mem_limit: 256m
+        healthcheck:
+            test:
+                [
+                    "CMD",
+                    "node",
+                    "-e",
+                    "fetch('http://127.0.0.1:3001/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+                ]
+            interval: 30s
+            timeout: 5s
+            retries: 3
+            start_period: 10s
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.ts-template-api.rule=Host(`ts-template.coji-dev.com`) && PathPrefix(`/api`)"
+            - "traefik.http.routers.ts-template-api.entrypoints=websecure"
+            - "traefik.http.routers.ts-template-api.tls.certresolver=letsencrypt"
+            - "traefik.http.services.ts-template-api.loadbalancer.server.port=3001"
+
+    web:
+        image: ghcr.io/c-tollison/ts-template-web:${IMAGE_TAG:?set IMAGE_TAG in .env}
+        restart: unless-stopped
+        networks: [vps]
+        security_opt:
+            - no-new-privileges:true
+        # nginx-unprivileged keeps its pid and temp dirs under /tmp.
+        read_only: true
+        tmpfs: [/tmp]
+        mem_limit: 64m
+        healthcheck:
+            test: ["CMD", "wget", "-qO", "/dev/null", "http://127.0.0.1:8080/"]
+            interval: 30s
+            timeout: 5s
+            retries: 3
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.ts-template-web.rule=Host(`ts-template.coji-dev.com`)"
+            - "traefik.http.routers.ts-template-web.entrypoints=websecure"
+            - "traefik.http.routers.ts-template-web.tls.certresolver=letsencrypt"
+            - "traefik.http.services.ts-template-web.loadbalancer.server.port=8080"
+
+networks:
+    vps:
+        external: true
+    db:
+        external: true
