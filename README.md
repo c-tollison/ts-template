@@ -234,6 +234,9 @@ pnpm add-component button
 pnpm add-component button card dialog
 ```
 
+It never overwrites a component that's already there. It answers no to every overwrite prompt and refuses
+`--overwrite`.
+
 Scaffold a new project from this template (`scripts/copy-project.mjs`):
 
 ```bash
